@@ -1,4 +1,4 @@
-# JS_V20_VITE_BUN_MONO
+# JS_V20_VITE_NPM_MONO
 
 Part of the `javascript-combos` white-box test-repo corpus (GraniteMill /
 `granite-mill`, domain: Community garden plots).
@@ -7,10 +7,10 @@ Part of the `javascript-combos` white-box test-repo corpus (GraniteMill /
 
 | Variable | This branch |
 | --- | --- |
-| Branch | `JS_V20_VITE_BUN_MONO` |
+| Branch | `JS_V20_VITE_NPM_MONO` |
 | Node.js | 20.20.2 (family V20) |
 | Bundler | Vite (built as esbuild) |
-| Package manager | bun |
+| Package manager | npm |
 | Bundled npm | 10.8.2 |
 | Architecture | Monolith |
 | Source root | `src` |
@@ -68,7 +68,7 @@ is a claim, invoking is the fact, and this corpus never blurs the two.
 ## Build
 
 ```
-npm install    # or yarn / pnpm / bun, per this branch's packageManager field
+npm install    # Corepack packageManager is npm@10.8.2; lockfile is package-lock.json
 npm run build
 ```
 
@@ -111,7 +111,7 @@ reason it does not. Only the third is a finding.
 ## Workspace layout
 
 ```
-javascript-combos/  (JS_V20_VITE_BUN_MONO)
+javascript-combos/  (JS_V20_VITE_NPM_MONO)
 |-- .github/
 |-- src/
 |-- tests/  (or packages/shared/tests/ for Microservices)

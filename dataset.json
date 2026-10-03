@@ -1,5 +1,5 @@
 {
-  "branchId": "JS_V20_VITE_BUN_MONO",
+  "branchId": "JS_V20_VITE_NPM_MONO",
   "repository": "javascript-combos",
   "productName": "GraniteMill",
   "packageName": "granite-mill",
@@ -8,7 +8,7 @@
   "node": "20.20.2",
   "nodeFamily": 20,
   "bundler": "Vite (built as esbuild)",
-  "packageManager": "bun",
+  "packageManager": "npm",
   "bundledNpm": "10.8.2",
   "architecture": "Monolith",
   "sourceRoot": "src",
