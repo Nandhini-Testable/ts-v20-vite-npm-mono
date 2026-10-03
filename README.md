@@ -83,7 +83,7 @@ node src/index.js
 ```
 npm test              # mocha tests/**/*.test.js
 npm run coverage      # nyc + mocha
-make check            # tools/full_check.js -- cross-file consistency audit
+node tools/full_check.js   # cross-file consistency audit
 ```
 
 ## Tool entry points
@@ -116,7 +116,6 @@ javascript-combos/  (JS_V20_VITE_NPM_MONO)
 |-- src/
 |-- tests/  (or packages/shared/tests/ for Microservices)
 |-- tools/  (21 tool directories + _skip.sh, tool_integration.js, full_check.js)
-|-- Makefile
 |-- README.md
 |-- dataset.json
 |-- package.json
