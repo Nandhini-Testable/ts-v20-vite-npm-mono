@@ -1,8 +1,10 @@
-'use strict';
+import { isProductId } from './ids';
+import type { Decision, Role, Status } from './types';
 
-const { isProductId } = require('./ids');
-
-function evaluatePolicy(record, role) {
+export function evaluatePolicy(
+  record: { id?: unknown; status?: Status } | null | undefined,
+  role: Role
+): Decision {
   if (!record || !isProductId(record.id)) {
     return { allowed: false, reason: 'invalid-id' };
   }
@@ -21,8 +23,8 @@ function evaluatePolicy(record, role) {
   return { allowed: false, reason: 'unknown-role' };
 }
 
-function canTransition(from, to) {
-  const graph = {
+export function canTransition(from: Status, to: Status): boolean {
+  const graph: Record<string, Status[]> = {
     draft: ['published', 'archived'],
     published: ['archived'],
     archived: [],
@@ -36,5 +38,3 @@ function canTransition(from, to) {
       return false;
   }
 }
-
-module.exports = { evaluatePolicy, canTransition };

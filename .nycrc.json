@@ -2,8 +2,8 @@
   "all": true,
   "check-coverage": false,
   "include": [
-    "src/**/*.js",
-    "packages/**/*.js"
+    "src/**/*.ts",
+    "packages/**/*.ts"
   ],
   "exclude": [
     "tests/**",

@@ -3,7 +3,7 @@ const { defineConfig } = require('vite');
 module.exports = defineConfig({
   build: {
     lib: {
-      entry: 'src/index.js',
+      entry: 'src/index.ts',
       formats: ['cjs'],
       fileName: () => 'index.js',
     },

@@ -1,6 +1,10 @@
-'use strict';
+import type { Decision } from './types';
 
-function authorize(actor, action) {
+export interface Actor {
+  role?: unknown;
+}
+
+export function authorize(actor: Actor | null | undefined, action: string): Decision {
   if (!actor || typeof actor.role !== 'string') {
     return { allowed: false, reason: 'unknown-actor' };
   }
@@ -9,5 +13,3 @@ function authorize(actor, action) {
   }
   return { allowed: true, reason: 'ok' };
 }
-
-module.exports = { authorize };

@@ -1,7 +1,5 @@
-'use strict';
-
-const assert = require('assert');
-const { authorize } = require('../src/auth');
+import assert from 'assert';
+import { authorize } from '../src/auth';
 
 describe('auth', function () {
   it('blocks viewers from writing', function () {

@@ -1,8 +1,6 @@
-'use strict';
-
-const assert = require('assert');
-const { evaluatePolicy, canTransition } = require('../src/policy');
-const { toProductId } = require('../src/ids');
+import assert from 'assert';
+import { evaluatePolicy, canTransition } from '../src/policy';
+import { toProductId } from '../src/ids';
 
 describe('policy', function () {
   const id = toProductId(1);

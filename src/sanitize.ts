@@ -1,12 +1,8 @@
-'use strict';
-
-function sanitizeText(input) {
+export function sanitizeText(input: unknown): string {
   if (typeof input !== 'string') return '';
   return input.replace(/[<>]/g, '').trim().slice(0, 240);
 }
 
-function allowRole(role) {
+export function allowRole(role: unknown): boolean {
   return role === 'owner' || role === 'editor' || role === 'viewer';
 }
-
-module.exports = { sanitizeText, allowRole };
