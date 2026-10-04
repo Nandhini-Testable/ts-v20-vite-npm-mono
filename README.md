@@ -83,7 +83,7 @@ node src/index.js
 ```
 npm test              # mocha tests/**/*.test.js
 npm run coverage      # nyc + mocha
-node tools/full_check.js   # cross-file consistency audit
+npx tsx tools/full_check.ts   # cross-file consistency audit
 ```
 
 ## Tool entry points
@@ -94,8 +94,8 @@ or all of them:
 
 ```
 bash tools/eslint/run_eslint.sh
-node tools/tool_integration.js --run
-node tools/tool_integration.js --verify
+npx tsx tools/tool_integration.ts --run
+npx tsx tools/tool_integration.ts --verify
 ```
 
 `--run` distinguishes three outcomes: a tool that ran, a tool that skipped
@@ -115,7 +115,7 @@ javascript-combos/  (JS_V20_VITE_NPM_MONO)
 |-- .github/
 |-- src/
 |-- tests/  (or packages/shared/tests/ for Microservices)
-|-- tools/  (21 tool directories + _skip.sh, tool_integration.js, full_check.js)
+|-- tools/  (21 tool directories + _skip.sh, tool_integration.ts, full_check.ts)
 |-- README.md
 |-- dataset.json
 |-- package.json

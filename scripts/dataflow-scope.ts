@@ -1,5 +1,4 @@
-#!/usr/bin/env node
-'use strict';
+#!/usr/bin/env -S npx tsx
 /*
  * Real, self-authored def-use static-analysis script (not a stub). Walks
  * every module under src/ with Espree + eslint-scope, reports every
@@ -9,34 +8,43 @@
  * All Uses Coverage blocks (see dataset.json / README.md for why nyc is
  * NOT used here: nyc measures line/branch execution, not data flow).
  */
-const fs = require('fs');
-const path = require('path');
-const espree = require('espree');
-const eslintScope = require('eslint-scope');
+import fs from 'fs';
+import path from 'path';
+import ts from 'typescript';
+// @ts-expect-error espree ships no type declarations
+import * as espree from 'espree';
+import * as eslintScope from 'eslint-scope';
 
-function listSourceFiles(dir) {
-  const out = [];
+interface Location { name: string; line: number }
+interface FileReport { file: string; defs: number; uses: number; unreached: number }
+
+function listSourceFiles(dir: string): string[] {
+  const out: string[] = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) out.push(...listSourceFiles(full));
-    else if (entry.isFile() && entry.name.endsWith('.js')) out.push(full);
+    else if (entry.isFile() && entry.name.endsWith('.ts')) out.push(full);
   }
   return out;
 }
 
-function analyze(file) {
-  const code = fs.readFileSync(file, 'utf8');
+function analyze(file: string): FileReport {
+  const source = fs.readFileSync(file, 'utf8');
+  // Strip TypeScript-only syntax so Espree can parse the module as plain JS.
+  const code = ts.transpileModule(source, {
+    compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS },
+  }).outputText;
   const ast = espree.parse(code, { ecmaVersion: 2022, sourceType: 'script', loc: true, range: true });
-  const scopeManager = eslintScope.analyze(ast, { ecmaVersion: 2022, sourceType: 'script' });
-  const defs = [];
-  const uses = [];
+  const scopeManager = eslintScope.analyze(ast, { ecmaVersion: 2022, sourceType: 'script' } as eslintScope.AnalyzeOptions);
+  const defs: Location[] = [];
+  const uses: Location[] = [];
   for (const scope of scopeManager.scopes) {
     for (const variable of scope.variables) {
       for (const def of variable.defs) {
-        defs.push({ name: variable.name, line: def.name.loc.start.line });
+        defs.push({ name: variable.name, line: def.name.loc!.start.line });
       }
       for (const ref of variable.references) {
-        if (!ref.init) uses.push({ name: variable.name, line: ref.identifier.loc.start.line });
+        if (!ref.init) uses.push({ name: variable.name, line: ref.identifier.loc!.start.line });
       }
     }
   }
@@ -45,7 +53,7 @@ function analyze(file) {
   return { file, defs: defs.length, uses: uses.length, unreached: unreached.length };
 }
 
-function main() {
+function main(): void {
   const root = process.argv[2] || 'src';
   if (!fs.existsSync(root)) {
     console.log(JSON.stringify({ root, files: [], totals: { defs: 0, uses: 0, unreached: 0 } }));

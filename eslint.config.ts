@@ -1,11 +1,9 @@
-'use strict';
+import sonarjs from 'eslint-plugin-sonarjs';
+import security from 'eslint-plugin-security';
 
-const sonarjs = require('eslint-plugin-sonarjs');
-const security = require('eslint-plugin-security');
-
-module.exports = [
+export default [
   {
-    files: ['src/**/*.js', 'packages/**/*.js'],
+    files: ['src/**/*.ts', 'packages/**/*.ts'],
     plugins: { sonarjs, security },
     languageOptions: { ecmaVersion: 2022, sourceType: 'commonjs' },
     rules: {

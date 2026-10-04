@@ -1,5 +1,4 @@
-#!/usr/bin/env node
-'use strict';
+#!/usr/bin/env -S npx tsx
 /**
  * Cross-file consistency audit for this branch. Every rule here reads its
  * expected value from the repository itself (.nvmrc, dataset.json, the
@@ -10,21 +9,25 @@
  *
  * Exit 0 = clean, 1 = at least one FAIL.
  */
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+
+interface ToolDetail { dir: string; status?: string }
+interface Dataset { nodeFamily?: unknown; toolsWired?: unknown; toolsActiveDetail?: ToolDetail[] }
+interface PackageJson { engines?: { node?: string } }
 
 const ROOT = path.dirname(__dirname);
-const PROBLEMS = [];
+const PROBLEMS: string[] = [];
 let checks = 0;
 
-function read(rel) { return fs.readFileSync(path.join(ROOT, rel), 'utf8'); }
-function exists(rel) { return fs.existsSync(path.join(ROOT, rel)); }
-function fail(msg) { PROBLEMS.push(msg); }
-function check() { checks += 1; }
+function read(rel: string): string { return fs.readFileSync(path.join(ROOT, rel), 'utf8'); }
+function exists(rel: string): boolean { return fs.existsSync(path.join(ROOT, rel)); }
+function fail(msg: string): void { PROBLEMS.push(msg); }
+function check(): void { checks += 1; }
 
 const NODE_FAMILY = read('.nvmrc').trim();
-const DATA = JSON.parse(read('dataset.json'));
-const PKG = JSON.parse(read('package.json'));
+const DATA: Dataset = JSON.parse(read('dataset.json'));
+const PKG: PackageJson = JSON.parse(read('package.json'));
 
 check();
 if (String(DATA.nodeFamily) !== NODE_FAMILY) {

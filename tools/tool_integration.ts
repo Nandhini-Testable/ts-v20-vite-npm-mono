@@ -1,11 +1,10 @@
-#!/usr/bin/env node
-'use strict';
+#!/usr/bin/env -S npx tsx
 /**
- * Tool integration entry point for branch JS_V20_VITE_NPM_MONO (Node 20).
+ * Tool integration entry point for branch TS_V20_VITE_NPM_MONO (Node 20).
  *
- *   node tools/tool_integration.js            banner
- *   node tools/tool_integration.js --verify   check every tool is wired
- *   node tools/tool_integration.js --run      run every tool, honouring skips
+ *   npx tsx tools/tool_integration.ts            banner
+ *   npx tsx tools/tool_integration.ts --verify   check every tool is wired
+ *   npx tsx tools/tool_integration.ts --run      run every tool, honouring skips
  *
  * Exit codes from --run mirror the runners' own contract:
  *   0  every tool either ran, or skipped for a reason dataset.json records
@@ -14,14 +13,26 @@
  *
  * Ported from the sibling Python corpus's tools/tool_integration.py.
  */
-const fs = require('fs');
-const path = require('path');
-const { spawnSync } = require('child_process');
+import fs from 'fs';
+import path from 'path';
+import { spawnSync } from 'child_process';
+
+interface WiringRow { dir: string; label: string; role: 'primary' | 'alternative'; entrypoint: string }
+interface ToolDetail { dir: string; status?: string }
+interface Dataset {
+  bundler?: string;
+  packageManager?: string;
+  architecture?: string;
+  toolsWired?: number;
+  toolsActive?: number;
+  toolsDark?: number;
+  toolsActiveDetail?: ToolDetail[];
+}
 
 const ROOT = path.dirname(__dirname);
 const TOOLS_DIR = path.join(ROOT, 'tools');
 
-const WIRING = [
+const WIRING: WiringRow[] = [
   { dir: "lizard", label: "Lizard", role: "primary", entrypoint: "tools/lizard/run_lizard.sh" },
   { dir: "cyclomatic-complexity", label: "cyclomatic-complexity", role: "alternative", entrypoint: "tools/cyclomatic-complexity/run_cyclomatic_complexity.sh" },
   { dir: "sonarjs", label: "eslint-plugin-sonarjs", role: "primary", entrypoint: "tools/sonarjs/run_sonarjs.sh" },
@@ -45,14 +56,14 @@ const WIRING = [
   { dir: "git-spark", label: "Git-Spark", role: "alternative", entrypoint: "tools/git-spark/run_git_spark.sh" }
 ];
 
-function loadDataset() {
+function loadDataset(): Dataset {
   return JSON.parse(fs.readFileSync(path.join(ROOT, 'dataset.json'), 'utf8'));
 }
 
-function banner() {
+function banner(): void {
   const data = loadDataset();
   console.log('='.repeat(78));
-  console.log(`  JS_V20_VITE_NPM_MONO  --  Node 20 (20.20.2)`);
+  console.log(`  TS_V20_VITE_NPM_MONO  --  Node 20 (20.20.2)`);
   console.log('='.repeat(78));
   console.log(`  bundler        : ${data.bundler}`);
   console.log(`  package manager: ${data.packageManager}`);
@@ -64,9 +75,9 @@ function banner() {
   console.log('='.repeat(78));
 }
 
-function verify() {
+function verify(): number {
   const data = loadDataset();
-  const problems = [];
+  const problems: string[] = [];
   for (const row of WIRING) {
     const folder = path.join(TOOLS_DIR, row.dir);
     if (!fs.existsSync(folder)) { problems.push(`missing directory: tools/${row.dir}`); continue; }
@@ -90,13 +101,13 @@ function verify() {
   return 0;
 }
 
-function runAll() {
+function runAll(): number {
   const data = loadDataset();
   const activeDetail = data.toolsActiveDetail || [];
   const expectedActive = new Set(activeDetail.filter((t) => t.status === 'active').map((t) => t.dir));
   const expectedDark = new Set(activeDetail.filter((t) => t.status !== 'active').map((t) => t.dir));
 
-  const ran = [], skipped = [], absent = [], failed = [], unexpected = [];
+  const ran: string[] = [], skipped: string[] = [], absent: string[] = [], failed: string[] = [], unexpected: string[] = [];
   for (const row of WIRING) {
     const entry = path.join(ROOT, row.entrypoint);
     const cmd = entry.endsWith('.py') ? 'python3' : 'bash';
@@ -125,7 +136,7 @@ function runAll() {
   return 0;
 }
 
-function main() {
+function main(): number {
   const args = process.argv.slice(2);
   if (args.includes('--verify')) return verify();
   if (args.includes('--run')) return runAll();

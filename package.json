@@ -16,7 +16,7 @@
     "coverage": "nyc npm test",
     "duplication": "jscpd .",
     "mutation": "stryker run",
-    "dataflow": "node scripts/dataflow-scope.js src",
+    "dataflow": "tsx scripts/dataflow-scope.ts src",
     "audit": "npm audit --json"
   },
   "devDependencies": {

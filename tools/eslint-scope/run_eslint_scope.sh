@@ -12,7 +12,7 @@ require_require "eslint-scope" "eslint-scope" "eslint-scope@9.1.2"
 
 cd "$ROOT"
 FINDINGS_EXIT=1   # non-zero from this tool means 'found something', not 'broke'
-node scripts/dataflow-scope.js src
+npx tsx scripts/dataflow-scope.ts src
 rc=$?
 accept_findings "eslint-scope" "$rc" "reports/dataflow.json"
 exit $?
