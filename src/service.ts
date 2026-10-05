@@ -1,6 +1,7 @@
 import { evaluatePolicy, canTransition } from './policy';
 import { ok, err, Result } from './result';
 import { toProductId } from './ids';
+import { withSpan } from './telemetry';
 import type { ProductRecord, Role, Status } from './types';
 
 export interface RecordStore {
@@ -19,6 +20,10 @@ export function createService(store: RecordStore): Service {
   let seq = 0;
 
   function upsert(fields: Partial<ProductRecord>, role: Role): Result<ProductRecord> {
+    return withSpan('service.upsert', { role: String(role) }, () => upsertInner(fields, role));
+  }
+
+  function upsertInner(fields: Partial<ProductRecord>, role: Role): Result<ProductRecord> {
     const id = fields.id || toProductId(seq++);
     const record: ProductRecord = Object.assign({ id, status: 'draft' }, fields, { id });
     const decision = evaluatePolicy(record, role);
@@ -28,6 +33,12 @@ export function createService(store: RecordStore): Service {
   }
 
   function move(id: string, toStatus: Status, role: Role): Result<ProductRecord> {
+    return withSpan('service.move', { id, toStatus: String(toStatus), role: String(role) }, () =>
+      moveInner(id, toStatus, role)
+    );
+  }
+
+  function moveInner(id: string, toStatus: Status, role: Role): Result<ProductRecord> {
     const record = store.get(id);
     if (!record) return err('not-found');
     const decision = evaluatePolicy(record, role);
